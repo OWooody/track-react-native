@@ -1,5 +1,4 @@
 import { Platform, NativeModules } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 import { TrackConfig, TrackEvent, SessionData } from './types';
 
 export class Track {
@@ -15,8 +14,15 @@ export class Track {
       debug: false,
       ...config,
     };
-    this.sessionId = uuidv4();
+    this.sessionId = this.generateSessionId();
     this.sessionStartTime = new Date().toISOString();
+  }
+
+  private generateSessionId(): string {
+    // Generate a timestamp-based ID with random suffix
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15);
+    return `${timestamp}-${random}`;
   }
 
   public static initialize(config: TrackConfig): Track {
