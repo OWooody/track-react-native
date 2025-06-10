@@ -70,7 +70,7 @@ export class Track {
       const eventWithUser = {
         ...event,
         userId: this.userId || event.userId,
-        timestamp: event.timestamp || new Date().toISOString(),
+        timestamp: new Date().toISOString(),
       };
 
       if (this.config.debug) {
