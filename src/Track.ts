@@ -28,6 +28,11 @@ export class Track {
 
   public async trackEvent(event: TrackEvent): Promise<void> {
     try {
+      if (this.config.debug) {
+        console.log('Sending event to:', `${this.config.apiUrl}/api/events`);
+        console.log('Event data:', event);
+      }
+
       const response = await fetch(`${this.config.apiUrl}/api/events`, {
         method: 'POST',
         headers: {
@@ -41,7 +46,8 @@ export class Track {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to send event: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Failed to send event: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       if (this.config.debug) {
@@ -50,6 +56,8 @@ export class Track {
     } catch (error) {
       if (this.config.debug) {
         console.error('Error sending event:', error);
+        console.error('Event that failed:', event);
+        console.error('API URL:', this.config.apiUrl);
       }
       throw error;
     }
