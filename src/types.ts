@@ -48,31 +48,21 @@ export interface TrackEvent {
 // Predefined event types for common tracking scenarios
 export const EventTypes = {
   // Page/Screen Events
-  PAGE_VIEW: 'page_view',
   SCREEN_VIEW: 'screen_view',
   
   // User Events
-  USER_IDENTIFIED: 'user_identified',
-  USER_LOGOUT: 'user_logout',
+  LOGIN: 'login',
+  LOGOUT: 'logout',
   
   // Conversion Events
   PURCHASE: 'purchase',
   SIGNUP: 'signup',
-  SUBSCRIPTION: 'subscription',
-  
-  // Element Interaction Events
-  BUTTON_CLICK: 'button_click',
-  FORM_SUBMIT: 'form_submit',
-  LINK_CLICK: 'link_click',
-  
-  // Error Events
-  ERROR: 'error',
-  EXCEPTION: 'exception',
-  
-  // Performance Events
-  PERFORMANCE: 'performance',
-  LOAD_TIME: 'load_time',
-  
-  // Custom Events
-  CUSTOM: 'custom'
+  SUBSCRIBE: 'subscribe',
+
+  // Action Events
+  BOOK: 'book',
+  CANCEL: 'cancel',
+  VIEW_ITEM: 'view_item',
+  BEGIN_CHECKOUT: 'begin_checkout',
+  ADD_TO_CART: 'add_to_cart'
 } as const; 
