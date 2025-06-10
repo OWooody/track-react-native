@@ -1,12 +1,8 @@
-import { Platform, NativeModules } from 'react-native';
-import { TrackConfig, TrackEvent, SessionData } from './types';
+import { TrackConfig, TrackEvent } from './types';
 
 export class Track {
   private static instance: Track;
   private config: TrackConfig;
-  private sessionId: string;
-  private sessionStartTime: string;
-  private pathHistory: string[] = [];
 
   private constructor(config: TrackConfig) {
     this.config = {
@@ -14,15 +10,6 @@ export class Track {
       debug: false,
       ...config,
     };
-    this.sessionId = this.generateSessionId();
-    this.sessionStartTime = new Date().toISOString();
-  }
-
-  private generateSessionId(): string {
-    // Generate a timestamp-based ID with random suffix
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 15);
-    return `${timestamp}-${random}`;
   }
 
   public static initialize(config: TrackConfig): Track {
@@ -39,7 +26,7 @@ export class Track {
     return Track.instance;
   }
 
-  private async sendEvent(event: TrackEvent): Promise<void> {
+  public async trackEvent(event: TrackEvent): Promise<void> {
     try {
       const response = await fetch(`${this.config.apiUrl}/api/events`, {
         method: 'POST',
@@ -49,7 +36,6 @@ export class Track {
         },
         body: JSON.stringify({
           ...event,
-          sessionId: this.sessionId,
           timestamp: event.timestamp || new Date().toISOString(),
         }),
       });
@@ -67,72 +53,5 @@ export class Track {
       }
       throw error;
     }
-  }
-
-  public async trackEvent(event: TrackEvent): Promise<void> {
-    await this.sendEvent(event);
-  }
-
-  public async trackScreen(screenName: string, properties?: Record<string, any>): Promise<void> {
-    this.pathHistory.push(screenName);
-    await this.trackEvent({
-      name: 'screen_view',
-      properties: {
-        screenName,
-        ...properties,
-      },
-      pageTitle: screenName,
-      pageType: 'screen',
-    });
-  }
-
-  public async trackUser(userId: string, properties?: Record<string, any>): Promise<void> {
-    await this.trackEvent({
-      name: 'user_identified',
-      userId,
-      properties,
-    });
-  }
-
-  public async trackConversion(
-    conversionType: string,
-    value?: number,
-    currency?: string,
-    properties?: Record<string, any>
-  ): Promise<void> {
-    await this.trackEvent({
-      name: 'conversion',
-      conversionType,
-      value,
-      currency,
-      properties,
-    });
-  }
-
-  public async trackElementInteraction(
-    elementId: string,
-    elementType: string,
-    elementText?: string,
-    elementCategory?: string,
-    properties?: Record<string, any>
-  ): Promise<void> {
-    await this.trackEvent({
-      name: 'element_interaction',
-      elementId,
-      elementType,
-      elementText,
-      elementCategory,
-      properties,
-    });
-  }
-
-  public getSessionData(): SessionData {
-    return {
-      sessionId: this.sessionId,
-      startTime: this.sessionStartTime,
-      pathHistory: this.pathHistory,
-      deviceType: Platform.OS,
-      os: Platform.Version.toString(),
-    };
   }
 } 

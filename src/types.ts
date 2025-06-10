@@ -12,25 +12,6 @@ export interface TrackEvent {
   name: string;
   properties?: EventProperties;
   timestamp?: string;
-  sessionId?: string;
-  userId?: string;
-  planId?: string;
-  category?: string;
-  action?: string;
-  pageTitle?: string;
-  pageType?: string;
-  elementId?: string;
-  elementType?: string;
-  elementText?: string;
-  elementCategory?: string;
-  value?: number;
-  currency?: string;
-  conversionType?: string;
-  funnelStep?: string;
-  itemId?: string;
-  itemName?: string;
-  itemCategory?: string;
-  contentId?: string;
 }
 
 export interface SessionData {
