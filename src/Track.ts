@@ -41,7 +41,7 @@ export class Track {
         },
         body: JSON.stringify({
           ...event,
-          timestamp: event.timestamp || new Date().toISOString(),
+          timestamp: new Date().toISOString(),
         }),
       });
 
