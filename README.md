@@ -23,41 +23,28 @@ Track.initialize({
   debug: true, // Enable debug mode for detailed logging
   apiUrl: 'https://your-api-url.com' // Your API endpoint
 });
+
+// Get the Track instance
+const track = Track.getInstance();
+
+// Set user ID for all subsequent events
+track.setUserId('user123');
 ```
 
 ### Track Events
 
 ```typescript
-// Get the Track instance
-const track = Track.getInstance();
-
 // Track a page view
 try {
   await track.trackEvent({
-    name: EventTypes.PAGE_VIEW,
+    name: EventTypes.SCREEN_VIEW,
     category: 'navigation',
     action: 'view',
     pageTitle: 'Home Page',
     properties: {
       referrer: 'Login Page'
     }
-  });
-} catch (error) {
-  console.error('Failed to track event:', error);
-}
-
-// Track a button click
-try {
-  await track.trackEvent({
-    name: EventTypes.BUTTON_CLICK,
-    category: 'engagement',
-    action: 'click',
-    elementId: 'submit-button',
-    elementType: 'button',
-    elementText: 'Submit',
-    properties: {
-      formId: 'signup-form'
-    }
+    // userId is automatically included from setUserId
   });
 } catch (error) {
   console.error('Failed to track event:', error);
@@ -75,10 +62,34 @@ try {
       productId: 'premium-plan',
       productName: 'Premium Plan'
     }
+    // userId is automatically included from setUserId
   });
 } catch (error) {
   console.error('Failed to track event:', error);
 }
+```
+
+### User Identification
+
+The SDK provides methods to manage user identification:
+
+```typescript
+// Set user ID for all subsequent events
+track.setUserId('user123');
+
+// Get current user ID
+const currentUserId = track.getUserId();
+
+// Track user login
+await track.trackEvent({
+  name: EventTypes.LOGIN,
+  category: 'engagement',
+  action: 'submit',
+  properties: {
+    method: 'email'
+  }
+  // userId is automatically included from setUserId
+});
 ```
 
 ## Event Types and Categories
@@ -164,9 +175,17 @@ interface TrackConfig {
 
 Returns the singleton instance of the Track SDK.
 
+### track.setUserId(userId: string)
+
+Sets the user ID to be used for all subsequent events. This ID will be automatically included in all events unless explicitly overridden.
+
+### track.getUserId(): string | null
+
+Returns the current user ID or null if not set.
+
 ### track.trackEvent(event: TrackEvent)
 
-Tracks an event with the provided properties. The SDK automatically adds a timestamp to each event.
+Tracks an event with the provided properties. The SDK automatically adds a timestamp and user ID (if set) to each event.
 
 ```typescript
 interface TrackEvent {
