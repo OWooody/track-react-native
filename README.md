@@ -87,16 +87,78 @@ const EventTypes = {
 }
 ```
 
-## Error Handling
+## Event Categories
 
 ```typescript
+type EventCategory = 
+  | 'engagement'    // User interactions (clicks, form submissions)
+  | 'conversion'    // Business goals (purchases, signups)
+  | 'navigation'    // Page/screen views
+  | 'error'         // Error tracking
+  | 'performance'   // Performance metrics
+  | 'custom'        // Custom events
+```
+
+## Event Actions
+
+```typescript
+type EventAction = 
+  | 'view'      // Viewing content
+  | 'click'     // Clicking elements
+  | 'submit'    // Form submissions
+  | 'scroll'    // Scrolling behavior
+  | 'search'    // Search actions
+  | 'filter'    // Filtering content
+  | 'sort'      // Sorting content
+  | 'download'  // File downloads
+  | 'share'     // Content sharing
+  | 'custom'    // Custom actions
+```
+
+## Error Handling
+
+The SDK provides detailed error information when debug mode is enabled. Common errors include:
+
+1. **API Connection Issues**
+   - Check if the `apiUrl` is correct
+   - Verify network connectivity
+   - Ensure the API endpoint is accessible
+
+2. **Authentication Errors**
+   - Verify your `apiKey` is correct
+   - Check if the API key has proper permissions
+
+3. **Request Format Issues**
+   - Ensure event names are strings
+   - Properties should be a valid JSON object
+   - Timestamp should be a valid ISO string
+
+Example of error handling with debug mode:
+
+```typescript
+Track.initialize({
+  apiKey: 'your-api-key',
+  debug: true, // Enable debug mode
+  apiUrl: 'https://your-api-url.com'
+});
+
+const track = Track.getInstance();
+
 try {
   await track.trackEvent({
     name: EventTypes.SCREEN_VIEW,
-    path: '/home'
+    path: '/home',
+    pageTitle: 'Home Page',
+    properties: {
+      test: 'value'
+    }
   });
 } catch (error) {
-  console.error('Failed to track event:', error);
+  // Debug mode will show:
+  // - The API URL being used
+  // - The event data being sent
+  // - Detailed error message from the server
+  console.error('Full error details:', error);
 }
 ```
 
