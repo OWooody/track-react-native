@@ -40,6 +40,7 @@ try {
     name: EventTypes.SCREEN_VIEW,
     category: 'navigation',
     action: 'view',
+    path: '/home',
     pageTitle: 'Home Page',
     properties: {
       referrer: 'Login Page'
@@ -57,10 +58,12 @@ try {
     category: 'conversion',
     action: 'submit',
     value: 99.99,
-    currency: 'USD',
+    itemId: 'premium-plan',
+    itemName: 'Premium Plan',
+    itemCategory: 'Subscription',
     properties: {
-      productId: 'premium-plan',
-      productName: 'Premium Plan'
+      currency: 'USD',
+      paymentMethod: 'credit_card'
     }
     // userId is automatically included from setUserId
   });
@@ -85,6 +88,8 @@ await track.trackEvent({
   name: EventTypes.LOGIN,
   category: 'engagement',
   action: 'submit',
+  path: '/login',
+  pageTitle: 'Login Page',
   properties: {
     method: 'email'
   }
@@ -189,20 +194,21 @@ Tracks an event with the provided properties. The SDK automatically adds a times
 
 ```typescript
 interface TrackEvent {
-  name: string;                   // Name of the event, use EventTypes for predefined events (e.g., 'purchase', 'page_view')
-  properties?: EventProperties;   // Additional custom properties for the event
-  category?: EventCategory;       // Category of the event, use EventCategory for predefined categories (e.g., 'conversion', 'engagement')
-  action?: EventAction;           // Action performed, use EventAction for predefined actions (e.g., 'click', 'submit', 'view')
-  value?: number;                 // Purchase amount or subscription price (VAT included)
-  currency?: string;              // Currency code for the value (e.g., 'USD', 'EUR')
-  userId?: string;                // Unique identifier of the user (from your backend)
-  pageTitle?: string;             // Title of the page where the event occurred (automatically generated if not provided)
-  itemId?: string;                // Item ID or product ID from your backend
-  itemName?: string;              // Item or product name from your backend
-  itemCategory?: string;          // Category of the item involved
-  planId?: string;                // Identifier of the subscription plan
-  referrer?: string;              // URL of the referring page
-  userAgent?: string;             // User agent string of the browser/device
+  name: string;                   // Required: Name of the event
+  properties?: EventProperties;   // Optional: Additional properties
+  timestamp?: string;             // Optional: ISO timestamp
+  category?: EventCategory;       // Optional: Event category (default: "engagement")
+  path?: string;                  // Optional: Page path
+  pageTitle?: string;             // Optional: Page title
+  action?: EventAction;           // Optional: Action performed
+  itemName?: string;              // Optional: Name of the item
+  itemId?: string;                // Optional: ID of the item
+  itemCategory?: string;          // Optional: Category of the item
+  value?: number;                 // Optional: Numeric value
+  planId?: string;                // Optional: Plan identifier
+  userId?: string;                // Optional: User identifier
+  referrer?: string;              // Optional: URL of the referring page
+  userAgent?: string;             // Optional: User agent string
 }
 ```
 
@@ -240,6 +246,8 @@ try {
     name: EventTypes.CUSTOM,
     category: 'engagement',
     action: 'click',
+    path: '/custom-page',
+    pageTitle: 'Custom Page',
     properties: {
       test: 'value'
     }
