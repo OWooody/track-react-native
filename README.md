@@ -5,9 +5,9 @@ A simple React Native SDK for tracking events.
 ## Installation
 
 ```bash
-npm install track-react-native
+npm install track-react-native @react-native-async-storage/async-storage
 # or
-yarn add track-react-native
+yarn add track-react-native @react-native-async-storage/async-storage
 ```
 
 ## Quick Start
@@ -22,8 +22,8 @@ const track = Track.initialize({
   debug: true, // Enable debug mode for detailed logging
 });
 
-// Set user ID from your backend 
-track.setUserId('user123');
+// Set user ID - this will persist between app sessions
+await track.setUserId('user123');
 
 // Track events
 await track.trackEvent({
@@ -42,6 +42,24 @@ await track.trackEvent({
     currency: 'USD'
   }
 });
+
+// Clear user ID when user logs out
+await track.clearUserId();
+```
+
+## User ID Management
+
+The SDK automatically persists the user ID between app sessions using AsyncStorage. This ensures that events are properly associated with users even after app restarts.
+
+```typescript
+// Set user ID
+await track.setUserId('user123');
+
+// Get current user ID
+const userId = track.getUserId();
+
+// Clear user ID (e.g., on logout)
+await track.clearUserId();
 ```
 
 ## Event Properties

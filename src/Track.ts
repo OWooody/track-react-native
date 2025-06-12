@@ -1,4 +1,8 @@
-import { TrackConfig, TrackEvent } from './types';
+import { Platform, NativeModules } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TrackConfig, TrackEvent, EventTypes } from './types';
+
+const USER_ID_KEY = '@track_user_id';
 
 export class Track {
   private static instance: Track;
@@ -11,6 +15,23 @@ export class Track {
       debug: false,
       ...config,
     };
+    this.loadUserId();
+  }
+
+  private async loadUserId(): Promise<void> {
+    try {
+      const storedUserId = await AsyncStorage.getItem(USER_ID_KEY);
+      if (storedUserId) {
+        this.userId = storedUserId;
+        if (this.config.debug) {
+          console.log('Loaded user ID from storage:', this.userId);
+        }
+      }
+    } catch (error) {
+      if (this.config.debug) {
+        console.error('Error loading user ID:', error);
+      }
+    }
   }
 
   public static initialize(config: TrackConfig): Track {
@@ -109,10 +130,18 @@ export class Track {
    * Sets the user ID to be used for all subsequent events
    * @param userId The user ID to set
    */
-  public setUserId(userId: string): void {
-    this.userId = userId;
-    if (this.config.debug) {
-      console.log('User ID set to:', userId);
+  public async setUserId(userId: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem(USER_ID_KEY, userId);
+      this.userId = userId;
+      if (this.config.debug) {
+        console.log('User ID set to:', userId);
+      }
+    } catch (error) {
+      if (this.config.debug) {
+        console.error('Error saving user ID:', error);
+      }
+      throw error;
     }
   }
 
@@ -122,5 +151,23 @@ export class Track {
    */
   public getUserId(): string | null {
     return this.userId;
+  }
+
+  /**
+   * Clears the stored user ID
+   */
+  public async clearUserId(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(USER_ID_KEY);
+      this.userId = null;
+      if (this.config.debug) {
+        console.log('User ID cleared');
+      }
+    } catch (error) {
+      if (this.config.debug) {
+        console.error('Error clearing user ID:', error);
+      }
+      throw error;
+    }
   }
 } 
