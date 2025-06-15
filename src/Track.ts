@@ -16,60 +16,6 @@ export class Track {
     };
   }
 
-  private async sendEvent(event: TrackEvent): Promise<void> {
-    try {
-      // Get user ID directly from storage
-      let userId = null;
-      try {
-        userId = await AsyncStorage.getItem(USER_ID_KEY);
-        if (this.config.debug) {
-          console.log('Retrieved user ID from storage:', userId);
-        }
-      } catch (error) {
-        if (this.config.debug) {
-          console.error('Error retrieving user ID:', error);
-        }
-      }
-
-      // Add user ID to event if available
-      const eventWithUser = {
-        ...event,
-        userId: userId,
-        timestamp: new Date().toISOString(),
-      };
-
-      if (this.config.debug) {
-        console.log('Sending event to:', `${this.config.apiUrl}/api/events`);
-        console.log('Event data:', eventWithUser);
-      }
-
-      const response = await fetch(`${this.config.apiUrl}/api/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.config.apiKey}`,
-        },
-        body: JSON.stringify(eventWithUser),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to send event: ${response.status} ${response.statusText} - ${errorText}`);
-      }
-
-      if (this.config.debug) {
-        console.log('Event sent successfully:', eventWithUser);
-      }
-    } catch (error) {
-      if (this.config.debug) {
-        console.error('Error sending event:', error);
-        console.error('Event that failed:', event);
-        console.error('API URL:', this.config.apiUrl);
-      }
-      throw error;
-    }
-  }
-
   public async setUserId(userId: string): Promise<void> {
     try {
       await AsyncStorage.setItem(USER_ID_KEY, userId);
@@ -129,9 +75,28 @@ export class Track {
 
   public async trackEvent(event: TrackEvent): Promise<void> {
     try {
+      // Get user ID directly from storage
+      let userId = null;
+      try {
+        userId = await AsyncStorage.getItem(USER_ID_KEY);
+        if (this.config.debug) {
+          console.log('Retrieved user ID from storage:', userId);
+        }
+      } catch (error) {
+        if (this.config.debug) {
+          console.error('Error retrieving user ID:', error);
+        }
+      }
+
+      const eventWithUser = {
+        ...event,
+        userId: userId,
+        timestamp: new Date().toISOString(),
+      };
+
       if (this.config.debug) {
         console.log('Sending event to:', `${this.config.apiUrl}/api/events`);
-        console.log('Event data:', event);
+        console.log('Event data:', eventWithUser);
       }
 
       const response = await fetch(`${this.config.apiUrl}/api/events`, {
@@ -140,10 +105,7 @@ export class Track {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.config.apiKey}`,
         },
-        body: JSON.stringify({
-          ...event,
-          timestamp: new Date().toISOString(),
-        }),
+        body: JSON.stringify(eventWithUser),
       });
 
       if (!response.ok) {
@@ -152,7 +114,7 @@ export class Track {
       }
 
       if (this.config.debug) {
-        console.log('Event sent successfully:', event);
+        console.log('Event sent successfully:', eventWithUser);
       }
     } catch (error) {
       if (this.config.debug) {
